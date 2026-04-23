@@ -1,77 +1,43 @@
 # AI Usage Tracker
 
-Live token usage and cost tracking for multiple AI coding tools, shown directly in the VS Code status bar and a sidebar dashboard.
+Live token usage and cost tracking for Claude, GitHub Copilot, and OpenAI Codex — shown directly in the VS Code status bar and a sidebar dashboard.
 
 ## Features
 
-- **Status bar items** — one entry per configured AI tool, always visible next to the git branch and Live Share items. Colour-coded by usage percentage (default / warning / error), with a rich hover tooltip (used, remaining, limit, cost, reset date) and a click action that opens the dashboard.
-- **Sidebar dashboard** — a webview in the activity bar showing an overview grid, per-tool progress bars, a 7-day bar chart per tool, an input/output token breakdown, the top 5 most expensive sessions today, and the last 50 session records.
-- **Notifications** — warning notifications at 70% / 90% and an error notification at 100% of each tool's limit. Daily digest notification is available (disabled by default).
-- **Security** — all API keys are stored in `vscode.SecretStorage`. Never written to settings files. Webview uses a per-render nonce and a strict CSP. No telemetry.
+- **Live status bar items** — one entry per AI tool, always visible next to the git branch and Live Share items. Shows current usage vs. limit in compact form (e.g. `Claude 45k/1m`).
 
-## Supported tools
+- **Color-coded thresholds** — each status bar item turns yellow above 50%, red above 80%, and appends a `!` marker. No color below 50%.
 
-| Tool | Source |
-| --- | --- |
-| Anthropic Claude | `GET https://api.anthropic.com/v1/usage` |
-| GitHub Copilot | `GET https://api.github.com/user/copilot_billing/seats` (+ optional org usage) |
-| OpenAI / Codex | `GET https://api.openai.com/v1/usage?date=…` |
-| Cursor AI | `~/.cursor/logs/usage.json` or local completion interception |
-| Google Gemini | model list call + local token counting |
-| Amazon CodeWhisperer | `service-quotas:ListServiceQuotas` + local completion interception |
-| Tabnine | `GET https://api.tabnine.com/usage` (if available) or local completion count |
+- **Rich hover tooltips** — hover any item to see used tokens, remaining, monthly limit, cost estimate, reset date, and a one-click link to the dashboard.
 
-## Configuration
+- **Sidebar dashboard** — a dedicated webview in the activity bar with:
+  - An overview grid (used today, remaining, cost, days to reset)
+  - Per-tool progress bars, model badges, last-used timestamps
+  - 7-day bar charts per tool
+  - Input vs. output token breakdown
+  - Top 5 most expensive sessions today
+  - A scrollable table of the last 50 session records
 
-All settings live under `aiUsageTracker.*`:
+- **Auto-detection — no API keys required** — detects your installed AI extensions (Claude Code, GitHub Copilot, Codex) and marks them as active automatically. You can start using the tracker the moment it's installed.
 
-- `limits` — per-tool numeric limits used by the progress bars and thresholds.
-- `pollingIntervalSeconds` — how often to refresh (default `60`).
-- `statusBarAlignment` — `"Left"` or `"Right"` (default `"Right"`).
-- `alertThresholds` — percentage thresholds (default `[70, 90, 100]`).
-- `enableCostEstimates`, `currency`, `resetDay`, `dailyDigestTime`, `enableDailyDigest`, `pricingOverrides`.
+- **Real token counts without API keys** — parses local session logs for Claude (`~/.claude/projects/**/*.jsonl`) and Codex (`~/.codex/sessions/**/rollout-*.jsonl`) to give you accurate token and cost numbers even when you're only signed in via OAuth.
 
-API keys are entered via the command **AI Tracker: Configure API Key** and stored encrypted.
+- **Notification alerts** — warning notifications at 70% and 90% of your limit, and an error notification at 100%. Each alert fires at most once per billing period.
 
-## Commands
+- **Optional daily digest** — a once-a-day summary notification showing tokens used and estimated cost across all tools.
 
-- `aiUsageTracker.refresh` — poll all tools now
-- `aiUsageTracker.openDashboard` — focus the sidebar
-- `aiUsageTracker.configureApiKey` — prompt for / store a provider key
-- `aiUsageTracker.resetSession` — clear local session counter for a tool
-- `aiUsageTracker.exportCSV` — export this and last month's daily usage
-- `aiUsageTracker.openSettings` — open the Settings UI filtered to this extension
+- **CSV export** — dump this month and last month's daily usage as a CSV file for your own analysis or billing records.
 
-## Getting started
+- **Cost estimation** — built-in per-model pricing table (Claude Opus/Sonnet/Haiku, GPT-4o/4 Turbo/3.5, Gemini Pro/Flash, etc.) with full override support via settings.
 
-```bash
-npm install
-npm run compile
-```
+- **Secure credential storage** — all API keys stored in VS Code's encrypted `SecretStorage`. Never written to `settings.json` or any workspace file. Log output scrubs `sk-…`, `ghp_…`, and similar patterns.
 
-Then press **F5** in VS Code to launch the Extension Development Host.
+- **Strict webview security** — per-render cryptographic nonce and a strict Content-Security-Policy header on the dashboard webview. No inline scripts, no remote content.
 
-1. Open the command palette → **AI Tracker: Configure API Key** → choose a provider and paste the key.
-2. Look for the `$(pulse)` items on the right of the status bar.
-3. Click any status bar item, or open the **AI Usage** view in the activity bar, to see the full dashboard.
+- **Theme-native UI** — dashboard styled entirely with `--vscode-*` CSS variables, so it looks native in any color theme (light, dark, high contrast) and is responsive down to 200 px sidebar width.
 
-## File structure
+- **No telemetry** — the extension only makes outbound requests to the AI provider APIs *you* configure. No analytics, no tracking, no data sent to third parties.
 
-```
-src/
-  extension.ts              // activation, polling loop, command wiring
-  statusBar.ts              // AIStatusBarManager
-  alertManager.ts           // threshold + digest notifications
-  tokenCounter.ts           // tiktoken + Anthropic count API + cost helpers
-  storageManager.ts         // JSON files under globalStorageUri
-  settingsManager.ts        // read settings, manage secret keys
-  trackers/                 // BaseTracker + 7 concrete trackers + Registry
-  sidebar/                  // WebviewViewProvider + HTML
-  utils/                    // formatters, dateHelpers, costCalculator, logger
-  types/index.ts            // shared interfaces
-  test/suite/*              // unit tests
-```
+- **Configurable billing period** — set your own `resetDay` (1–28) to match your actual billing cycle, not just the calendar month.
 
-## Privacy
-
-The extension only makes outbound requests to the provider APIs you have configured keys for. There is no first-party telemetry or analytics.
+- **Customizable polling** — default 60 s refresh interval, configurable via `aiUsageTracker.pollingIntervalSeconds`.
