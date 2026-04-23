@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+
+- Added an extension icon (purple gradient + pulse line).
+
 ## 1.0.0
 
 - Initial release.

@@ -2,8 +2,9 @@
   "name": "ai-usage-tracker",
   "displayName": "AI Usage Tracker",
   "description": "Live token usage and cost tracking for Claude, Copilot, and Codex — shown in the status bar.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "ToqirAhmad",
+  "icon": "images/icon.png",
   "license": "MIT",
   "author": {
     "name": "Toqir Ahmad"
