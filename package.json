@@ -1,0 +1,129 @@
+{
+  "name": "ai-usage-tracker",
+  "displayName": "AI Usage Tracker",
+  "description": "Live token usage and cost tracking for Claude, Copilot, Codex, Gemini and more — shown in the status bar",
+  "version": "1.0.0",
+  "publisher": "local",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./dist/extension.js",
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "tsc -p ./ && node esbuild.js",
+    "watch": "tsc -p ./ -w",
+    "package": "tsc -p ./ && node esbuild.js --production",
+    "test": "node ./out/test/runTest.js"
+  },
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "aiUsageTracker",
+          "title": "AI Usage",
+          "icon": "$(pulse)"
+        }
+      ]
+    },
+    "views": {
+      "aiUsageTracker": [
+        {
+          "id": "aiUsageTrackerSidebar",
+          "type": "webview",
+          "name": "Usage Dashboard"
+        }
+      ]
+    },
+    "commands": [
+      { "command": "aiUsageTracker.refresh",         "title": "AI Tracker: Refresh Now" },
+      { "command": "aiUsageTracker.openDashboard",   "title": "AI Tracker: Open Dashboard" },
+      { "command": "aiUsageTracker.configureApiKey", "title": "AI Tracker: Configure API Key" },
+      { "command": "aiUsageTracker.resetSession",    "title": "AI Tracker: Reset Session Counter" },
+      { "command": "aiUsageTracker.exportCSV",       "title": "AI Tracker: Export Usage as CSV" },
+      { "command": "aiUsageTracker.openSettings",    "title": "AI Tracker: Open Settings" }
+    ],
+    "configuration": {
+      "title": "AI Usage Tracker",
+      "properties": {
+        "aiUsageTracker.limits": {
+          "type": "object",
+          "default": {
+            "Claude": 1000000,
+            "Copilot": 100000,
+            "Codex": 500000
+          },
+          "description": "Per-tool token/quota limits used for status bar thresholds.",
+          "additionalProperties": { "type": "number" }
+        },
+        "aiUsageTracker.pollingIntervalSeconds": {
+          "type": "number",
+          "default": 60,
+          "minimum": 10,
+          "description": "How often (in seconds) to poll each AI provider for usage."
+        },
+        "aiUsageTracker.statusBarAlignment": {
+          "type": "string",
+          "enum": ["Left", "Right"],
+          "default": "Right",
+          "description": "Which side of the status bar to show AI usage items on."
+        },
+        "aiUsageTracker.alertThresholds": {
+          "type": "array",
+          "items": { "type": "number" },
+          "default": [70, 90, 100],
+          "description": "Percentage thresholds (of the per-tool limit) at which to raise a notification."
+        },
+        "aiUsageTracker.enableCostEstimates": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to display cost estimates alongside token counts."
+        },
+        "aiUsageTracker.currency": {
+          "type": "string",
+          "default": "USD",
+          "description": "Currency code used for displayed cost estimates."
+        },
+        "aiUsageTracker.resetDay": {
+          "type": "number",
+          "default": 1,
+          "minimum": 1,
+          "maximum": 28,
+          "description": "Day of the month on which billing periods reset."
+        },
+        "aiUsageTracker.dailyDigestTime": {
+          "type": "string",
+          "default": "08:00",
+          "description": "Time (HH:MM, 24-hour) at which to show the daily usage digest notification."
+        },
+        "aiUsageTracker.enableDailyDigest": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to show a daily digest notification at the configured time."
+        },
+        "aiUsageTracker.pricingOverrides": {
+          "type": "object",
+          "default": {},
+          "description": "Per-model pricing overrides (USD per 1M tokens). Shape: { \"<model>\": { \"input\": number, \"output\": number } }."
+        },
+        "aiUsageTracker.copilotOrg": {
+          "type": "string",
+          "default": "",
+          "description": "Optional GitHub org slug to query for Copilot org-level usage."
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "tiktoken": "^1.0.15",
+    "@aws-sdk/client-service-quotas": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^18.19.0",
+    "@types/mocha": "^10.0.6",
+    "typescript": "^5.3.0",
+    "esbuild": "^0.20.0",
+    "@vscode/test-electron": "^2.3.0",
+    "mocha": "^10.2.0"
+  }
+}

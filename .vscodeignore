@@ -1,0 +1,15 @@
+.vscode/**
+.vscode-test/**
+out/test/**
+src/**
+**/*.map
+**/*.ts
+!dist/**
+node_modules/**
+!node_modules/tiktoken/**
+!node_modules/@aws-sdk/**
+!node_modules/@smithy/**
+.gitignore
+tsconfig.json
+esbuild.js
+CHANGELOG.md
