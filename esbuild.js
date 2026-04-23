@@ -12,7 +12,7 @@ const ctx = {
   platform: 'node',
   target: 'node18',
   outfile: 'dist/extension.js',
-  external: ['vscode', 'tiktoken', '@aws-sdk/client-service-quotas'],
+  external: ['vscode', 'tiktoken'],
   logLevel: 'info'
 };
 

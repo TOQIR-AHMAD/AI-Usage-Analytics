@@ -1,18 +1,52 @@
 {
   "name": "ai-usage-tracker",
   "displayName": "AI Usage Tracker",
-  "description": "Live token usage and cost tracking for Claude, Copilot, Codex, Gemini and more — shown in the status bar",
+  "description": "Live token usage and cost tracking for Claude, Copilot, and Codex — shown in the status bar.",
   "version": "1.0.0",
-  "publisher": "local",
-  "engines": { "vscode": "^1.85.0" },
-  "categories": ["Other"],
-  "activationEvents": ["onStartupFinished"],
+  "publisher": "TOQIR-AHMAD",
+  "license": "MIT",
+  "author": {
+    "name": "TOQIR-AHMAD"
+  },
+  "homepage": "https://github.com/TOQIR-AHMAD/AI-Usage-Analytics#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TOQIR-AHMAD/AI-Usage-Analytics.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TOQIR-AHMAD/AI-Usage-Analytics/issues"
+  },
+  "keywords": [
+    "ai",
+    "claude",
+    "copilot",
+    "codex",
+    "openai",
+    "anthropic",
+    "token",
+    "usage",
+    "cost",
+    "tracker",
+    "status bar"
+  ],
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Visualization"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./dist/extension.js",
   "scripts": {
     "vscode:prepublish": "npm run package",
     "compile": "tsc -p ./ && node esbuild.js",
     "watch": "tsc -p ./ -w",
     "package": "tsc -p ./ && node esbuild.js --production",
+    "package:vsix": "vsce package",
+    "publish": "vsce publish",
     "test": "node ./out/test/runTest.js"
   },
   "contributes": {
@@ -35,12 +69,30 @@
       ]
     },
     "commands": [
-      { "command": "aiUsageTracker.refresh",         "title": "AI Tracker: Refresh Now" },
-      { "command": "aiUsageTracker.openDashboard",   "title": "AI Tracker: Open Dashboard" },
-      { "command": "aiUsageTracker.configureApiKey", "title": "AI Tracker: Configure API Key" },
-      { "command": "aiUsageTracker.resetSession",    "title": "AI Tracker: Reset Session Counter" },
-      { "command": "aiUsageTracker.exportCSV",       "title": "AI Tracker: Export Usage as CSV" },
-      { "command": "aiUsageTracker.openSettings",    "title": "AI Tracker: Open Settings" }
+      {
+        "command": "aiUsageTracker.refresh",
+        "title": "AI Tracker: Refresh Now"
+      },
+      {
+        "command": "aiUsageTracker.openDashboard",
+        "title": "AI Tracker: Open Dashboard"
+      },
+      {
+        "command": "aiUsageTracker.configureApiKey",
+        "title": "AI Tracker: Configure API Key"
+      },
+      {
+        "command": "aiUsageTracker.resetSession",
+        "title": "AI Tracker: Reset Session Counter"
+      },
+      {
+        "command": "aiUsageTracker.exportCSV",
+        "title": "AI Tracker: Export Usage as CSV"
+      },
+      {
+        "command": "aiUsageTracker.openSettings",
+        "title": "AI Tracker: Open Settings"
+      }
     ],
     "configuration": {
       "title": "AI Usage Tracker",
@@ -53,7 +105,9 @@
             "Codex": 500000
           },
           "description": "Per-tool token/quota limits used for status bar thresholds.",
-          "additionalProperties": { "type": "number" }
+          "additionalProperties": {
+            "type": "number"
+          }
         },
         "aiUsageTracker.pollingIntervalSeconds": {
           "type": "number",
@@ -63,14 +117,23 @@
         },
         "aiUsageTracker.statusBarAlignment": {
           "type": "string",
-          "enum": ["Left", "Right"],
+          "enum": [
+            "Left",
+            "Right"
+          ],
           "default": "Right",
           "description": "Which side of the status bar to show AI usage items on."
         },
         "aiUsageTracker.alertThresholds": {
           "type": "array",
-          "items": { "type": "number" },
-          "default": [70, 90, 100],
+          "items": {
+            "type": "number"
+          },
+          "default": [
+            70,
+            90,
+            100
+          ],
           "description": "Percentage thresholds (of the per-tool limit) at which to raise a notification."
         },
         "aiUsageTracker.enableCostEstimates": {
@@ -113,17 +176,15 @@
       }
     }
   },
-  "dependencies": {
-    "tiktoken": "^1.0.15",
-    "@aws-sdk/client-service-quotas": "^3.0.0"
-  },
   "devDependencies": {
-    "@types/vscode": "^1.85.0",
-    "@types/node": "^18.19.0",
     "@types/mocha": "^10.0.6",
-    "typescript": "^5.3.0",
-    "esbuild": "^0.20.0",
+    "@types/node": "^18.19.0",
+    "@types/vscode": "^1.85.0",
     "@vscode/test-electron": "^2.3.0",
-    "mocha": "^10.2.0"
+    "@vscode/vsce": "^3.9.1",
+    "esbuild": "^0.20.0",
+    "mocha": "^10.2.0",
+    "tiktoken": "^1.0.15",
+    "typescript": "^5.3.0"
   }
 }
